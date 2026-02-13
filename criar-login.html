@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Criar Conta - CycloCred</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:'Segoe UI', sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+}
+
+.container{
+    background:#ffffff;
+    width:420px;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 25px 60px rgba(0,0,0,0.35);
+}
+
+h2{
+    text-align:center;
+    margin-bottom:25px;
+    color:#0f172a;
+}
+
+.input-group{
+    margin-bottom:18px;
+}
+
+input{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #d1d5db;
+    font-size:14px;
+    transition:0.3s;
+}
+
+input:focus{
+    outline:none;
+    border-color:#16a34a;
+    box-shadow:0 0 0 3px rgba(22,163,74,0.15);
+}
+
+small{
+    font-size:12px;
+    color:#6b7280;
+    display:block;
+    margin-top:6px;
+}
+
+.checkbox-group{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    font-size:13px;
+    margin-bottom:20px;
+}
+
+.checkbox-group input{
+    width:18px;
+    height:18px;
+    margin-top:3px;
+    accent-color:#16a34a;
+}
+
+.checkbox-group label{
+    color:#374151;
+    line-height:1.4;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    border:none;
+    background:linear-gradient(90deg,#16a34a,#15803d);
+    color:white;
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 25px rgba(22,163,74,0.35);
+}
+
+.popup{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    display:none;
+    align-items:center;
+    justify-content:center;
+}
+
+.popup-content{
+    background:white;
+    padding:30px;
+    border-radius:18px;
+    width:340px;
+    text-align:center;
+}
+
+.popup-content h3{
+    margin-bottom:15px;
+    color:#16a34a;
+}
+
+.popup-content p{
+    font-size:14px;
+    margin-bottom:20px;
+    color:#374151;
+    line-height:1.5;
+}
+
+.popup-content button{
+    width:100%;
+}
+
+.error-msg{
+    color:#dc2626;
+    font-size:13px;
+    margin-bottom:12px;
+    text-align:center;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Criar Conta</h2>
+
+    <div id="errorMsg" class="error-msg"></div>
+
+    <div class="input-group">
+        <input type="text" id="name" placeholder="Nome completo">
+    </div>
+
+    <div class="input-group">
+        <input type="email" id="email" placeholder="Email">
+    </div>
+
+    <div class="input-group">
+        <input type="tel" id="phone" placeholder="Telefone (DDD + número)">
+    </div>
+
+    <div class="input-group">
+        <input type="password" id="password" placeholder="Senha">
+        <small>A senha deve conter no mínimo 8 caracteres, incluindo letra maiúscula, minúscula e número.</small>
+    </div>
+
+    <div class="checkbox-group">
+        <input type="checkbox" id="whatsappConfirm">
+        <label for="whatsappConfirm">
+            Confirmo que posso ser contatado via WhatsApp.
+        </label>
+    </div>
+
+    <button onclick="register()">Criar Conta</button>
+</div>
+
+<div id="popup" class="popup">
+    <div class="popup-content">
+        <h3>Cadastro realizado com sucesso</h3>
+        <p>
+            Recebemos seus dados.<br><br>
+            Entraremos em contato pelo WhatsApp em menos de 24 horas
+            (em dias úteis).
+        </p>
+        <button onclick="voltarHome()">Voltar à página inicial</button>
+    </div>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } 
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } 
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA263XiUlGeFS-axqS3IqK8NM-cU__-ooQ",
+  authDomain: "luiz-cyclecred-teste.firebaseapp.com",
+  projectId: "luiz-cyclecred-teste",
+  storageBucket: "luiz-cyclecred-teste.appspot.com",
+  messagingSenderId: "221271702920",
+  appId: "1:221271702920:web:57dcc2b3ad69fc41538e3d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+window.register = async () => {
+
+    const errorMsg = document.getElementById("errorMsg");
+    errorMsg.innerText = "";
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const password = document.getElementById("password").value;
+    const whatsappConfirm = document.getElementById("whatsappConfirm").checked;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10,11}$/;
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    if(!name || !email || !phone || !password){
+        errorMsg.innerText = "Preencha todos os campos.";
+        return;
+    }
+
+    if(!emailRegex.test(email)){
+        errorMsg.innerText = "Digite um email válido.";
+        return;
+    }
+
+    if(!phoneRegex.test(phone)){
+        errorMsg.innerText = "Digite um telefone válido com DDD (somente números).";
+        return;
+    }
+
+    if(!strongPasswordRegex.test(password)){
+        errorMsg.innerText = "Senha fraca. Use 8+ caracteres com maiúscula, minúscula e número.";
+        return;
+    }
+
+    if(!whatsappConfirm){
+        errorMsg.innerText = "Você precisa autorizar o contato via WhatsApp.";
+        return;
+    }
+
+    try{
+
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        await updateProfile(user, { displayName: name });
+
+        await setDoc(doc(db, "users", user.uid), {
+            name,
+            email,
+            phone,
+            whatsappConfirm: true,
+            createdAt: new Date()
+        });
+
+        document.getElementById("popup").style.display = "flex";
+
+    }catch(error){
+
+        if(error.code === "auth/email-already-in-use"){
+            errorMsg.innerText = "Este email já está cadastrado.";
+        }else{
+            errorMsg.innerText = "Erro ao criar conta. Tente novamente.";
+        }
+    }
+}
+
+window.voltarHome = () => {
+    window.location.href = "index.html";
+}
+
+</script>
+
+</body>
+</html>

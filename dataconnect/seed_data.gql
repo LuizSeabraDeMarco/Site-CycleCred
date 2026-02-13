@@ -1,0 +1,90 @@
+mutation CreateDemoData @transaction @auth(level: USER, insecureReason: "This is a seed data mutation, so no specific user context is needed.") {
+  user_insertMany(data: [
+    {
+      id: "6e2e5c8e-8a0b-4e12-a1b7-7e6d4c3f2a1b",
+      displayName: "Alice Runner",
+      email: "alice.runner@example.com",
+      createdAt: "2023-01-01T10:00:00Z",
+      bio: "Avid runner and cyclist.",
+      photoUrl: "https://example.com/alice.jpg",
+      totalCred: 1500
+    },
+    {
+      id: "5d9f1a2c-3b7e-4d0f-8c6a-9b1e0f3d5c7a",
+      displayName: "Bob Cyclist",
+      email: "bob.cyclist@example.com",
+      createdAt: "2023-01-05T11:30:00Z",
+      bio: "Loves long bike rides.",
+      photoUrl: "https://example.com/bob.jpg",
+      totalCred: 2000
+    }
+  ])
+  club_insertMany(data: [
+    {
+      id: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+      name: "Local Cycling Crew",
+      description: "A friendly cycling club for all levels.",
+      createdAt: "2023-02-10T08:00:00Z",
+      ownerId: "5d9f1a2c-3b7e-4d0f-8c6a-9b1e0f3d5c7a",
+      clubAvatarUrl: "https://example.com/cycling_crew_logo.png"
+    },
+    {
+      id: "f8e7d6c5-b4a3-2f1e-0d9c-8b7a6f5e4d3c",
+      name: "Morning Runners Club",
+      description: "Early morning runs to start the day right.",
+      createdAt: "2023-03-15T07:00:00Z",
+      ownerId: "6e2e5c8e-8a0b-4e12-a1b7-7e6d4c3f2a1b",
+      clubAvatarUrl: "https://example.com/runners_club_logo.png"
+    }
+  ])
+  membership_insertMany(data: [
+    {
+      userId: "6e2e5c8e-8a0b-4e12-a1b7-7e6d4c3f2a1b",
+      clubId: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+      joinedAt: "2023-02-15T09:00:00Z"
+    },
+    {
+      userId: "5d9f1a2c-3b7e-4d0f-8c6a-9b1e0f3d5c7a",
+      clubId: "f8e7d6c5-b4a3-2f1e-0d9c-8b7a6f5e4d3c",
+      joinedAt: "2023-03-20T07:30:00Z"
+    }
+  ])
+  activity_insertMany(data: [
+    {
+      id: "12345678-1234-5678-1234-567812345678",
+      userId: "6e2e5c8e-8a0b-4e12-a1b7-7e6d4c3f2a1b",
+      date: "2023-04-01",
+      distance: 10.5,
+      duration: 3600,
+      averageSpeed: 10.5,
+      createdAt: "2023-04-01T15:00:00Z",
+      routeDescription: "Morning run through the park."
+    },
+    {
+      id: "87654321-4321-8765-4321-876543210987",
+      userId: "5d9f1a2c-3b7e-4d0f-8c6a-9b1e0f3d5c7a",
+      date: "2023-04-02",
+      distance: 25.0,
+      duration: 7200,
+      averageSpeed: 12.5,
+      createdAt: "2023-04-02T16:00:00Z",
+      routeDescription: "Cycling trip along the river."
+    }
+  ])
+  comment_insertMany(data: [
+    {
+      id: "c1a2b3c4-d5e6-f7a8-b9c0-d1e2f3a4b5c6",
+      activityId: "12345678-1234-5678-1234-567812345678",
+      userId: "5d9f1a2c-3b7e-4d0f-8c6a-9b1e0f3d5c7a",
+      content: "Great run, Alice!",
+      createdAt: "2023-04-01T16:30:00Z"
+    },
+    {
+      id: "x9y8z7w6-v5u4-t3s2-r1q0-p9o8n7m6l5k4",
+      activityId: "87654321-4321-8765-4321-876543210987",
+      userId: "6e2e5c8e-8a0b-4e12-a1b7-7e6d4c3f2a1b",
+      content: "Nice ride, Bob!",
+      createdAt: "2023-04-02T17:15:00Z"
+    }
+  ])
+}

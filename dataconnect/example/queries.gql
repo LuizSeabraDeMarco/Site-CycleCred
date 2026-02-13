@@ -1,0 +1,45 @@
+query ListAllUsers @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  users {
+    id
+    displayName
+    email
+    photoUrl
+    totalCred
+  }
+}
+
+mutation CreateNewActivity($distance: Float!, $duration: Int!, $date: Date!, $averageSpeed: Float, $routeDescription: String) @auth(level: USER) {
+  activity_insert(data: {
+    distance: $distance,
+    duration: $duration,
+    date: $date,
+    averageSpeed: $averageSpeed,
+    routeDescription: $routeDescription,
+    userId_expr: "auth.uid"
+  }) {
+    id
+  }
+}
+
+query GetUserAndTheirClubs($userId: UUID!) @auth(level: USER, insecureReason: "This operation is safe to expose to all logged in users.") {
+  user(id: $userId) {
+    id
+    displayName
+    email
+    clubs_via_Membership {
+      id
+      name
+      description
+    }
+  }
+}
+
+mutation AddCommentToActivity($activityId: UUID!, $content: String!) @auth(level: USER) {
+  comment_insert(data: {
+    activityId: $activityId,
+    content: $content,
+    userId_expr: "auth.uid"
+  }) {
+    id
+  }
+}

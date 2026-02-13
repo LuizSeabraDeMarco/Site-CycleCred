@@ -1,0 +1,39 @@
+type User @table {
+  displayName: String!
+  email: String!
+  createdAt: Timestamp!
+  photoUrl: String
+  bio: String
+  totalCred: Int
+}
+
+type Activity @table {
+  distance: Float!
+  duration: Int!
+  date: Date!
+  createdAt: Timestamp!
+  routeDescription: String
+  averageSpeed: Float
+  user: User
+}
+
+type Club @table {
+  name: String!
+  createdAt: Timestamp!
+  description: String
+  clubAvatarUrl: String
+  owner: User
+}
+
+type Membership @table(key: ["user", "club"]) {
+  joinedAt: Timestamp!
+  user: User!
+  club: Club!
+}
+
+type Comment @table {
+  content: String!
+  createdAt: Timestamp!
+  user: User
+  activity: Activity
+}
